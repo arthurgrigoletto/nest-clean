@@ -5,7 +5,6 @@ import {
   HttpStatus,
   Post,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common'
 import { CurrentUser } from 'src/auth/current-user-decorator'
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
