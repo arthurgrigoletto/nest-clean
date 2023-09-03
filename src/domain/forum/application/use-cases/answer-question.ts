@@ -4,7 +4,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Answer } from '../../enterprise/entities/answer'
 import { AnswerAttachment } from '../../enterprise/entities/answer-attachment'
 import { AnswerAttachmentList } from '../../enterprise/entities/answer-attachment-list'
-import { AnswerRepository } from '../repositories/answers-repository'
+import { AnswersRepository } from '../repositories/answers-repository'
 
 interface AnswerQuestionUseCaseRequest {
   instructorId: string
@@ -16,7 +16,7 @@ interface AnswerQuestionUseCaseRequest {
 type AnswerQuestionUseCaseResponse = Either<null, { answer: Answer }>
 
 export class AnswerQuestionUseCase {
-  constructor(private answerRepository: AnswerRepository) {}
+  constructor(private answersRepository: AnswersRepository) {}
 
   public async execute({
     instructorId,
@@ -39,7 +39,7 @@ export class AnswerQuestionUseCase {
 
     answer.attachments = new AnswerAttachmentList(questionAttachments)
 
-    await this.answerRepository.create(answer)
+    await this.answersRepository.create(answer)
 
     return right({ answer })
   }
