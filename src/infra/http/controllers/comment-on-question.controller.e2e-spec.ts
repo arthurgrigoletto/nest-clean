@@ -5,22 +5,20 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { AnswerFactory } from 'test/factories/make-answer'
 import { QuestionFactory } from 'test/factories/make-question'
 import { StudentFactory } from 'test/factories/make-student'
 
-describe('Edit Answer (E2E)', () => {
+describe('Comment on question (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let jwt: JwtService
   let studentFactory: StudentFactory
   let questionFactory: QuestionFactory
-  let answerFactory: AnswerFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [StudentFactory, QuestionFactory, AnswerFactory],
+      providers: [StudentFactory, QuestionFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -28,12 +26,11 @@ describe('Edit Answer (E2E)', () => {
     jwt = moduleRef.get(JwtService)
     studentFactory = moduleRef.get(StudentFactory)
     questionFactory = moduleRef.get(QuestionFactory)
-    answerFactory = moduleRef.get(AnswerFactory)
 
     await app.init()
   })
 
-  test('[PUT] /answers/:id', async () => {
+  test('[POST] /questions/:questionId/comments', async () => {
     const user = await studentFactory.makePrismaStudent()
 
     const accessToken = jwt.sign({ sub: user.id.toString() })
@@ -42,28 +39,23 @@ describe('Edit Answer (E2E)', () => {
       authorId: user.id,
     })
 
-    const answer = await answerFactory.makePrismaAnswer({
-      questionId: question.id,
-      authorId: user.id,
-    })
-
-    const answerId = answer.id.toString()
+    const questionId = question.id.toString()
 
     const response = await request(app.getHttpServer())
-      .put(`/answers/${answerId}`)
+      .post(`/questions/${questionId}/comments`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        content: 'New Answer Content',
+        content: 'New Comment',
       })
 
-    expect(response.statusCode).toBe(204)
+    expect(response.statusCode).toBe(201)
 
-    const questionOnDatabase = await prisma.answer.findFirst({
+    const commentOnDatabase = await prisma.comment.findFirst({
       where: {
-        content: 'New Answer Content',
+        content: 'New Comment',
       },
     })
 
-    expect(questionOnDatabase).toBeTruthy()
+    expect(commentOnDatabase).toBeTruthy()
   })
 })
