@@ -4,7 +4,6 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { QuestionFactory } from 'test/factories/make-question'
 import { StudentFactory } from 'test/factories/make-student'
 
 describe('Upload Attachment (E2E)', () => {
@@ -15,7 +14,7 @@ describe('Upload Attachment (E2E)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [StudentFactory, QuestionFactory],
+      providers: [StudentFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -36,5 +35,8 @@ describe('Upload Attachment (E2E)', () => {
       .attach('file', './test/e2e/sample-upload.jpg')
 
     expect(response.statusCode).toBe(201)
+    expect(response.body).toEqual({
+      attachmentId: expect.any(String),
+    })
   })
 })
