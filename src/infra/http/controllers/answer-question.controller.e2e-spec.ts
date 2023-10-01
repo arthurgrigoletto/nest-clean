@@ -70,5 +70,7 @@ describe('Answer question (E2E)', () => {
         answerId: answerOnDatabase?.id,
       },
     })
+
+    expect(attachmentsOnDatabase).toHaveLength(2)
   })
 })
