@@ -37,6 +37,10 @@ export class QuestionDetails extends ValueObject<QuestionDetailsProps> {
     return this.props.content
   }
 
+  get slug() {
+    return this.props.slug
+  }
+
   get attachments() {
     return this.props.attachments
   }
